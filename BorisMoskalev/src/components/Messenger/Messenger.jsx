@@ -34,7 +34,7 @@ export class Messenger extends Component {
             const {author} = this.state.chats[chat].messages[this.state.chats[chat].messages.length - 1];
             console.log(author);
             if (author !== 'Bot') {
-                let message = {
+                const message = {
                     author: 'Bot',
                     text: 'Привет ' + author + '! Бот на связи! Повторите я вас не расслышал!'
                 }

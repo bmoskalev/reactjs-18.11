@@ -1,37 +1,30 @@
 import './Messenger.css';
 
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 
 import {MessagesList} from 'components/MessagesList';
 import {MessageForm} from 'components/MessageForm';
 import {ChatList} from 'components/ChatList'
 
-export class Messenger extends Component {
-    state = {
-        chats: {
-            '1': {messages: []},
-            '2': {messages: []},
-            '3': {messages: []},
-            '4': {messages: []}
-        },
-    };
+export class Messenger extends PureComponent {
 
-    messages() {
-        let { chat } = this.props;
-        let { chats } = this.state;
+    get messages() {
+        let {match, chats} = this.props;
 
         let messages = [];
-        if (chat && chats[chat]) {
-            messages = chats[chat].messages;
+        if (match && chats[match.params.id]) {
+            messages = chats[match.params.id].messages;
         }
         return messages;
     }
+
     interval = null;
 
     componentDidUpdate() {
-        let {chat} = this.props;
-        if (this.state.chats[chat].messages.length) {
-            const {author} = this.state.chats[chat].messages[this.state.chats[chat].messages.length - 1];
+        let {match,chats } = this.props;
+        const chat = chats[match.params.id];
+        if (chat.messages.length) {
+            const {author} = chat.messages[chat.messages.length - 1];
             console.log(author);
             if (author !== 'Bot') {
                 const message = {
@@ -50,11 +43,14 @@ export class Messenger extends Component {
     }
 
     handleMessageSend = (message) => {
-        let {chat} = this.props;
-        let {chats} = this.state;
-
-        chats[chat].messages = chats[chat].messages.concat([message]);
-        this.setState(({chats}) => ({chats: chats}));
+        let {match,chats} = this.props;
+        const chat = chats[match.params.id];
+        const messages = this.messages.concat(message)
+        chat.messages = messages;
+        this.setState({
+            ...this.state.chats,
+            [match.params.id]: chat,
+        });
     };
 
     render() {
@@ -64,7 +60,7 @@ export class Messenger extends Component {
                     <ChatList/>
                 </div>
                 <div className="messenger">
-                    {this.props.chat ? <MessagesList items={this.messages()}/> : 'Чат еще не выбран'}
+                    {this.props.chat ? <MessagesList items={this.messages}/> : 'Чат еще не выбран'}
                     {this.props.chat && <MessageForm onSend={this.handleMessageSend}/>}
                 </div>
             </div>

@@ -1,3 +1,3 @@
-import {createActions} from "redux-actions";
+import {createAction} from "redux-actions";
 
-export const load = createActions('[Chats] load');
+export const load = createAction('[Chats] load');
